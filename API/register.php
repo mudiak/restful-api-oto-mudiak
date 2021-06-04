@@ -8,7 +8,7 @@ $id_customer = $_POST['id_customer'];
 $name = $_POST['name'];
 $email = $_POST['email'];
 $password = $_POST['password'];
-$path_picture ="http://10.234.251.42/oto_mudiak/API/uploads/$id_customer.jpg";
+$path_picture ="http://192.168.0.105/oto_mudiak/API/uploads/$id_customer.jpg";
 
 if($id_customer == '' ||  $name == '' ||$email == '' ||$password == '' || $path_picture == ''){
     echo 'Tidak Boleh kosong';
