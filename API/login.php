@@ -14,6 +14,7 @@ if($cek > 0){
     $response['email'] = $data['email'];
     $response['name'] = $data['name'];
     $response['username'] = $data['id_customer'];
+    $response['wallet'] = $data['wallet'];
     $response['pathPicture'] = $data['path_picture'];
 
     echo json_encode($response);

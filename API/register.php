@@ -8,13 +8,13 @@ $id_customer = $_POST['id_customer'];
 $name = $_POST['name'];
 $email = $_POST['email'];
 $password = $_POST['password'];
-$path_picture ="http://192.168.0.105/oto_mudiak/API/uploads/$id_customer.jpg";
+$path_picture ="uploads/$id_customer.jpg";
 
 if($id_customer == '' ||  $name == '' ||$email == '' ||$password == '' || $path_picture == ''){
     echo 'Tidak Boleh kosong';
 }else{
-    $sql = mysqli_query($koneksi,"INSERT INTO `customers` (`id_customer`, `name`, `email`, `password`, `path_picture`) 
-                            VALUES ('$id_customer', '$name', '$email', MD5('$password'), '$path_picture');");
+    $sql = mysqli_query($koneksi,"INSERT INTO `customers` (`id_customer`, `name`, `email`, `password`, `path_picture`,`wallet`) 
+                            VALUES ('$id_customer', '$name', '$email', MD5('$password'), '$path_picture',0);");
 if($sql){
     // include 'mail.php';
     echo json_encode(array('response'=>'Sign up user berhasil ','kode'=> 1));
