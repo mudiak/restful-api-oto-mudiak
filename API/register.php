@@ -8,7 +8,7 @@ $id_customer = $_POST['id_customer'];
 $name = $_POST['name'];
 $email = $_POST['email'];
 $password = $_POST['password'];
-$path_picture ="uploads/$id_customer.jpg";
+$path_picture ="uploads/$name.jpg";
 
 if($id_customer == '' ||  $name == '' ||$email == '' ||$password == '' || $path_picture == ''){
     echo 'Tidak Boleh kosong';

@@ -27,6 +27,15 @@ if($page == '1'){
         echo json_encode(array('response'=>'Username Tidak ditemukan ','kode'=> 101));
     }
     
+}elseif($page=='nama'){
+    $id_customer = $_GET['username'];
+    $sql = mysqli_query($koneksi,"Select name  from customers where id_customer='$id_customer'");
+    $data = mysqli_fetch_array($sql);
+    if($data){
+        echo json_encode(array("nama"=>$data['name']));
+    }else{
+        echo json_encode(array('response'=>'Username Tidak ditemukan ','kode'=> 101));
+    }
 }
 
 ?>
