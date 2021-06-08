@@ -45,7 +45,7 @@
         $data["idagency"]= "0";
         $data["nama"]= "0";
         $data["timestart"]= "0";
-        $data["tgl"]= "0";
+        $data["tgl"]= $skrg;
         $data["lama"]= "0";
         $data["startaddress"]= "0";
         $data["finishaddress"]= "0";
@@ -67,19 +67,70 @@
 
 mysqli_close($koneksi);
     }elseif($page=='checkout'){
+        $idorder=$_POST['idorder'];
         $idbus = $_POST['idbus'];
         $username = $_POST['username'];
         $seat = $_POST['seat'];
         $price = $_POST['price'];
 
         $sql = mysqli_query($koneksi,"INSERT INTO `orders` 
-        (`id_bus`, `id_customer`, `seat_number`, `total_price`) 
-        VALUES ('$idbus', '$username', '$seat', '$price');");
+        (`idorder`,`id_bus`, `id_customer`, `seat_number`, `total_price`) 
+        VALUES ('$idorder','$idbus', '$username', '$seat', '$price')");
+
+
 
         if($sql){
-            echo json_encode(array('response'=>'CheckOut Berhasil ','kode'=> 1));
+            $ambilsql = mysqli_query($koneksi,"select wallet from customers where id_customer='$username'");
+            $ambil = mysqli_fetch_array($ambilsql);
+            $wallet = 0;
+            $wallet = (int)$ambil['wallet'];
+          
+                $updatewallet = $wallet - $price;
+
+            
+            $upwalletsql = mysqli_query($koneksi,"UPDATE `customers` SET `wallet` = '$updatewallet' WHERE `customers`.`id_customer` = '$username'");
+            if($updatewallet){
+
+                echo json_encode(array('response'=>'CheckOut Berhasil ','kode'=> 1));
+            }
         }
 
+        
+    }elseif($page=='cekSeat'){
+        $idbus = $_GET['idbus'];
+        $sql = mysqli_query($koneksi,"select seat_number from orders where id_bus='$idbus'");
+        $ceksql = mysqli_num_rows($sql);
+        if($ceksql > 0){
+            while($seat = mysqli_fetch_assoc($sql)){
+                $data[] = $seat;
+                $json = json_encode($data);
+            }
+        }else{
+            $data["seat_number"]= "0";
+            $json = json_encode($data);
+
+        }
+       
+        echo $json;
+    }elseif($page=='detail'){
+        $idorder = $_GET['idorder'];
+        $sql = mysqli_query($koneksi,"SELECT orders.idorder as idorder,
+        busagency.name_agency as bus,
+        busdetails.tgl as tgl,
+        busdetails.time as time, 
+        orders.seat_number as seat,
+        orders.total_price as price,
+        customers.name as nama,
+        busdetails.start_address as start,
+        busdetails.destination_address as finish 
+        FROM orders,busdetails,busagency,customers 
+        WHERE orders.id_bus = busdetails.id_bus and 
+        orders.id_customer = customers.id_customer and 
+        busdetails.id_busagency = busagency.id_busagency and 
+        orders.idorder = '$idorder'");
+        $ambil[] = mysqli_fetch_assoc($sql);
+        $json = json_encode($ambil);
+        echo $json;
         
     }
 ?>
