@@ -128,9 +128,91 @@ mysqli_close($koneksi);
         orders.id_customer = customers.id_customer and 
         busdetails.id_busagency = busagency.id_busagency and 
         orders.idorder = '$idorder'");
-        $ambil[] = mysqli_fetch_assoc($sql);
+        $ambil = mysqli_fetch_assoc($sql);
         $json = json_encode($ambil);
         echo $json;
         
+    }elseif($page=='listticket'){
+        $username = $_GET['username'];
+        $tgl = date('Y-m-d');
+        $sql = mysqli_query($koneksi,"SELECT 
+        orders.idorder as id,
+        busagency.id_busagency as idagency,
+        busagency.name_agency as nama, 
+        busdetails.id_bus as id_bus, 
+        busdetails.time as timestart, 
+        busdetails.tgl as tgl, 
+        timediff(busdetails.time_finish,busdetails.time) as lama,
+        busdetails.start_address as startaddress,
+        busdetails.destination_address as finishaddress,
+        orders.total_price as price 
+        from orders,busdetails,busagency 
+        WHERE orders.id_bus= busdetails.id_bus and busdetails.id_busagency = busagency.id_busagency 
+        and busdetails.tgl ='$tgl' and orders.id_Customer='$username' order by orders.idorder desc");
+ $cek = mysqli_num_rows($sql);
+ if($cek >0){
+   
+     while($ambil = mysqli_fetch_assoc($sql)){
+         
+         $data[] = $ambil;
+         $json = json_encode($data);
+        
+     }
+    }else{
+        $data["id"]= "0";
+        $data["idagency"]= "0";
+        $data["nama"]= "0";
+        $data["timestart"]= "0";
+        $data["tgl"]= $tgl;
+        $data["lama"]= "0";
+        $data["startaddress"]= "0";
+        $data["finishaddress"]= "0";
+        $data["price"]= "0";
+        $ambil[] = $data;
+        $json = json_encode($ambil);
     }
+
+     echo $json;    
+}elseif($page=='listticketexpired'){
+    $username = $_GET['username'];
+    $tgl = date('Y-m-d');
+    $sql = mysqli_query($koneksi,"SELECT 
+    orders.idorder as id,
+    busagency.id_busagency as idagency,
+    busagency.name_agency as nama, 
+    busdetails.id_bus as id_bus, 
+    busdetails.time as timestart, 
+    busdetails.tgl as tgl, 
+    timediff(busdetails.time_finish,busdetails.time) as lama,
+    busdetails.start_address as startaddress,
+    busdetails.destination_address as finishaddress,
+    orders.total_price as price 
+    from orders,busdetails,busagency 
+    WHERE orders.id_bus= busdetails.id_bus and busdetails.id_busagency = busagency.id_busagency 
+    and busdetails.tgl <>'$tgl' and orders.id_Customer='$username' order by orders.idorder desc");
+$cek = mysqli_num_rows($sql);
+if($cek >0){
+
+ while($ambil = mysqli_fetch_assoc($sql)){
+     
+     $data[] = $ambil;
+     $json = json_encode($data);
+    
+ }
+}else{
+    $data["id"]= "0";
+    $data["idagency"]= "0";
+    $data["nama"]= "0";
+    $data["timestart"]= "0";
+    $data["tgl"]= $tgl;
+    $data["lama"]= "0";
+    $data["startaddress"]= "0";
+    $data["finishaddress"]= "0";
+    $data["price"]= "0";
+    $ambil[] = $data;
+    $json = json_encode($ambil);
+}
+
+ echo $json;    
+}
 ?>
