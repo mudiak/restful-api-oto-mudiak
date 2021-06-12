@@ -102,16 +102,18 @@ mysqli_close($koneksi);
         $ceksql = mysqli_num_rows($sql);
         if($ceksql > 0){
             while($seat = mysqli_fetch_assoc($sql)){
+                
                 $data[] = $seat;
                 $json = json_encode($data);
             }
         }else{
-            $data["seat_number"]= "0";
+            $seat["seat_number"]= "SP";
+            $data[]=$seat;
             $json = json_encode($data);
-
+            
         }
-       
         echo $json;
+       
     }elseif($page=='detail'){
         $idorder = $_GET['idorder'];
         $sql = mysqli_query($koneksi,"SELECT orders.idorder as idorder,
@@ -214,5 +216,76 @@ if($cek >0){
 }
 
  echo $json;    
+}elseif($page=='listlokasi'){
+    $sqllokasi = mysqli_query($koneksi,"Select DISTINCT start_address from busdetails");
+$cek = mysqli_num_rows($sqllokasi);
+if($cek >0){
+
+ while($ambil = mysqli_fetch_assoc($sqllokasi)){
+     
+     $data[] = $ambil;
+     $json = json_encode($data);
+    
+ }
+}else{
+    $data["start_address"]= "0";
+    
+    $ambil[] = $data;
+    $json = json_encode($ambil);
+}
+echo $json;
+}elseif($page=='listcarilokasi'){
+    $lokasi = $_GET['lokasi'];
+    $skrg = date('Y-m-d');
+    $sql = mysqli_query($koneksi,"SELECT 
+        busagency.id_busagency as idagency,
+        busagency.name_agency as nama, 
+        busdetails.id_bus as id_bus, 
+        busdetails.time as timestart, 
+        busdetails.tgl as tgl, 
+        timediff(busdetails.time_finish,busdetails.time) as lama,
+        busdetails.start_address as startaddress,
+        busdetails.destination_address as finishaddress,
+        busdetails.price as price 
+        from busdetails,busagency 
+        WHERE busdetails.id_busagency = busagency.id_busagency and busdetails.tgl ='$skrg' and busdetails.start_address ='$lokasi'");
+    
+    $cek = mysqli_num_rows($sql);
+    if($cek >0){
+      
+        while($ambil = mysqli_fetch_assoc($sql)){
+            // $bus["idagency"] = $ambil['idagency']; 
+            // $bus["nama"] = $ambil['nama']; 
+            // $bus["id_bus"] = $ambil['id_bus']; 
+            // $mulai = strtotime($ambil['timestart']);
+            // $selesai =strtotime($ambil['timefinish']);
+            // $selisih = $selesai - $mulai;
+            // $jam    =floor($selisih / (60 * 60));
+            // $menit    =floor($selisih - $jam * (60 * 60))/60;
+            // $lama = "".$jam."h ".$menit."m";
+            // $bus["timestart"] = $ambil['timestart']; 
+            // $bus["lama"] = $lama;
+            // $bus["startaddress"] = $ambil['startaddress'];
+            // $bus["finishaddress"] = $ambil['finishaddress'];
+            // $bus["price"] = $ambil['price'];
+            $data[] = $ambil;
+            $json = json_encode($data);
+           
+        }
+        
+    }else{
+        $data["id"]= "0";
+        $data["idagency"]= "0";
+        $data["nama"]= "0";
+        $data["timestart"]= "0";
+        $data["tgl"]= "0";
+        $data["lama"]= "0";
+        $data["startaddress"]= "0";
+        $data["finishaddress"]= "0";
+        $data["price"]= "0";
+        $ambil[] = $data;
+        $json = json_encode($ambil);
+    }
+    echo $json;
 }
 ?>

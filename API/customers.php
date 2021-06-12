@@ -36,6 +36,78 @@ if($page == '1'){
     }else{
         echo json_encode(array('response'=>'Username Tidak ditemukan ','kode'=> 101));
     }
+}elseif($page=='editwithfoto'){
+    $return["error"] =false;
+    $return["msg"] = "";
+    //array to return
+    
+    if(isset($_POST["image"])){
+        $id = $_POST['username'];
+        
+        $name = $_POST['name'];
+        $base64_string = $_POST["image"];
+        $outputfile = "uploads/$name".date('Y-m-d his').".jpg" ;
+        //save as image.jpg in uploads/ folder
+        $sqlcekfoto = mysqli_query($koneksi,"select path_picture as foto from customers where id_customer='$id'");
+        $datafoto = mysqli_fetch_assoc($sqlcekfoto);
+        if(unlink($datafoto['foto'])){
+            $filehandler = fopen($outputfile, 'wb' ); 
+            //file open with "w" mode treat as text file
+            //file open with "wb" mode treat as binary file
+            $cek =fwrite($filehandler, base64_decode($base64_string));
+            // we could add validation here with ensuring count($data)>1
+            if($cek){
+            $email = $_POST['email'];
+            $nama =$name;
+            $foto = $outputfile;
+            $sql = mysqli_query($koneksi,"UPDATE `customers` 
+            SET `name` = '$nama',
+             `email` = '$email',
+              `path_picture` = '$foto' 
+              WHERE `customers`.`id_customer` = '$id'");
+              if($sql){
+                  $sqldata = mysqli_query($koneksi,"select name,id_customer,email,wallet,path_picture as pathPicture from customers where id_customer='$id'");
+                  $ambil = mysqli_fetch_assoc($sqldata);
+                  $data = $ambil; 
+                  $json = json_encode($data);
+                  
+                }
+                
+            }// clean up the file resource
+            fclose($filehandler); 
+        }
+    
+       
+        
+        
+    }else{
+        $return["error"] = true;
+        $return["msg"] =  "No image is submited.";
+        
+    }
+    
+    header('Content-Type: application/json');
+    // tell browser that its a json data
+    echo ($json);
+
+}elseif($page=='editwithoutfoto'){
+    $id = $_POST['username'];
+    $email = $_POST['email'];
+    $nama =$_POST['name'];
+    $sql = mysqli_query($koneksi,"UPDATE `customers` 
+    SET `name` = '$nama',
+     `email` = '$email'
+      WHERE `customers`.`id_customer` = '$id'");
+      if($sql){
+        $sqldata = mysqli_query($koneksi,"select name,id_customer,email,wallet,path_picture as pathPicture from customers where id_customer='$id'");
+        $ambil = mysqli_fetch_assoc($sqldata);
+        $data = $ambil; 
+      $json = json_encode($data);
+        
+        echo $json;
+          
+      }
+
 }
 
 ?>

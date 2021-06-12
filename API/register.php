@@ -14,7 +14,7 @@ if($id_customer == '' ||  $name == '' ||$email == '' ||$password == '' || $path_
     echo 'Tidak Boleh kosong';
 }else{
     $sql = mysqli_query($koneksi,"INSERT INTO `customers` (`id_customer`, `name`, `email`, `password`, `path_picture`,`wallet`) 
-                            VALUES ('$id_customer', '$name', '$email', MD5('$password'), '$path_picture',0);");
+                            VALUES ('$id_customer', '$name', '$email', MD5('$password'), '$path_picture',1000);");
 if($sql){
     // include 'mail.php';
     echo json_encode(array('response'=>'Sign up user berhasil ','kode'=> 1));
