@@ -16,7 +16,7 @@
         busdetails.destination_address as finishaddress,
         busdetails.price as price 
         from busdetails,busagency 
-        WHERE busdetails.id_busagency = busagency.id_busagency and busdetails.tgl ='$skrg'");
+        WHERE busdetails.id_busagency = busagency.id_busagency and busdetails.tgl ='$skrg' order by busdetails.time");
     
     $cek = mysqli_num_rows($sql);
     if($cek >0){
@@ -89,9 +89,23 @@ mysqli_close($koneksi);
 
             
             $upwalletsql = mysqli_query($koneksi,"UPDATE `customers` SET `wallet` = '$updatewallet' WHERE `customers`.`id_customer` = '$username'");
-            if($updatewallet){
+            if($upwalletsql){
+                $sqlambilnamabus = mysqli_query($koneksi,"select id_busagency from busdetails where id_bus= '$idbus'");
+                $namabus = mysqli_fetch_array($sqlambilnamabus);
+                $idbusagency = $namabus['id_busagency'];
 
-                echo json_encode(array('response'=>'CheckOut Berhasil ','kode'=> 1));
+                $sqlambilemoney = mysqli_query($koneksi,"select emoney from busagency where id_busagency='$idbusagency'");
+                $dataemoney = mysqli_fetch_array($sqlambilemoney);
+
+
+                $totalmasuk = (int)$price + (int)$dataemoney['emoney'];
+                echo $totalmasuk; 
+                $updatedatagency = mysqli_query($koneksi,"UPDATE `busagency` SET `emoney` = '$totalmasuk' 
+                WHERE `busagency`.`id_busagency` = '$idbusagency'");
+                if($updatedatagency){
+                    echo json_encode(array('response'=>''.$username,'kode'=> 1));
+
+                }
             }
         }
 
